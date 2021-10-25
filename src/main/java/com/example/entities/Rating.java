@@ -1,4 +1,4 @@
-package com.example.tables;
+package com.example.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

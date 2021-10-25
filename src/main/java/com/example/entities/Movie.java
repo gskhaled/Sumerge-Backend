@@ -1,4 +1,4 @@
-package com.example.tables;
+package com.example.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -250,7 +250,7 @@ public class Movie {
     public boolean wasRatedBefore(String userId) {
         for (Rating rating :
                 ratings) {
-            if (rating.getUser().getEmail().equals(userId) && rating.getMovie().getId() == id)
+            if (rating.getUser().getUsername().equals(userId) && rating.getMovie().getId() == id)
                 return true;
         }
         return false;
@@ -259,7 +259,7 @@ public class Movie {
     public boolean wasFlaggedBefore(String userId) {
         for (User user :
                 flaggedMovies) {
-            if (user.getEmail().equals(userId))
+            if (user.getUsername().equals(userId))
                 return true;
         }
         return false;

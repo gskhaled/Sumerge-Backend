@@ -1,13 +1,13 @@
 package com.example.services;
 
+import com.example.entities.Genre;
+import com.example.entities.Movie;
+import com.example.entities.Rating;
+import com.example.entities.User;
 import com.example.repositories.GenreRepository;
 import com.example.repositories.MovieRepository;
 import com.example.repositories.RatingRepository;
 import com.example.repositories.UserRepository;
-import com.example.tables.Genre;
-import com.example.tables.Movie;
-import com.example.tables.Rating;
-import com.example.tables.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class MovieService {
     @Autowired
-    MovieRepository movieRepository;
+    private MovieRepository movieRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    RatingRepository ratingRepository;
+    private RatingRepository ratingRepository;
     @Autowired
-    GenreRepository genreRepository;
+    private GenreRepository genreRepository;
 
     @PostConstruct
     public void populateDatabase() {

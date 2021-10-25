@@ -1,7 +1,7 @@
 package com.example.controllers;
 
+import com.example.entities.Movie;
 import com.example.services.MovieService;
-import com.example.tables.Movie;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,11 +44,13 @@ public class MovieController {
         return movieService.removeFlag(form.movieId, form.userId);
     }
 
+    //    @RolesAllowed("admin")
     @RequestMapping(method = RequestMethod.POST, value = "/movies/hideMovie")
     private String hideMovie(@RequestBody MovieIdForm movieId) {
         return movieService.hideMovie(movieId.movieId);
     }
 
+    //    @RolesAllowed("admin")
     @RequestMapping(method = RequestMethod.POST, value = "/movies/showMovie")
     private String showMovie(@RequestBody MovieIdForm movieId) {
         return movieService.showMovie(movieId.movieId);
