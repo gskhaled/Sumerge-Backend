@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,6 +104,40 @@ public class MovieService {
         return movieRepository.findById(id).orElse(null);
     }
 
+    public List<Movie> recommendMovies(String token) {
+        String username = jwtUtil.extractUsername(token);
+        User user = userRepository.findById(username).orElse(null);
+
+        // first get genres from rated movies
+        List<Genre> ratedGenres = new ArrayList<>();
+        for (Rating ratedMovie :
+                user.getRatings()) {
+            ratedGenres.addAll(ratedMovie.getMovie().getGenres());
+        }
+
+        // then get genres from flagged movies
+        List<Movie> flaggedMovies = user.getFlaggedMovies();
+        List<Genre> flaggedGenres = new ArrayList<>();
+        for (Movie movie :
+                flaggedMovies) {
+            flaggedGenres.addAll(movie.getGenres());
+        }
+
+        // find and filter movies with these genres
+        List<Movie> movies = movieRepository.findAll();
+        List<Movie> recommendedMovies = new ArrayList<>();
+        for (Movie movie :
+                movies) {
+            if ((ratedGenres.size() == 0 || !Collections.disjoint(movie.getGenres(), ratedGenres))
+                    && Collections.disjoint(movie.getGenres(), flaggedGenres)) {
+                recommendedMovies.add(movie);
+            }
+            if (recommendedMovies.size() > 10)
+                break;
+        }
+        return recommendedMovies;
+    }
+
     public Movie addMovie(Movie movie) {
         movie.setAddedBy("admin");
         return movieRepository.save(movie);
@@ -135,7 +170,10 @@ public class MovieService {
         if (movie != null && user != null && rating > 0 && rating <= 10) {
             if (!movie.wasRatedBefore(username)) {
                 movie.recalculateVote(rating);
-                ratingRepository.save(new Rating(rating, user, movie));
+                Rating toAdd = new Rating(rating, user, movie);
+//                user.addRating(toAdd);
+//                userRepository.save(user);
+                ratingRepository.save(toAdd);
                 movieRepository.save(movie);
                 return "OK";
             }

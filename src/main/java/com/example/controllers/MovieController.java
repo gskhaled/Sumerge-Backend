@@ -25,6 +25,11 @@ public class MovieController {
         return movieService.getAllMovies(Integer.parseInt(page));
     }
 
+    @RequestMapping("/movies/recommend")
+    public List<Movie> recommendMovies(@RequestHeader("Authorization") String token) {
+        return movieService.recommendMovies(token.substring(7));
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/movies/editMovie")
     public Movie editMovie(@RequestBody MovieEditForm form) {
         return movieService.editMovie(form.getMovieId(), form.getLanguage(), form.getRelease_date(), form.getGenre_ids());

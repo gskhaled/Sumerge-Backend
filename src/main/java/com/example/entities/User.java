@@ -32,11 +32,23 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
     private List<Rating> ratings = new ArrayList<>();
 
     @ManyToMany(mappedBy = "flaggedMovies", cascade = CascadeType.ALL)
     private List<Movie> flaggedMovies = new ArrayList<>();
+
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void addRating(Rating rating) {
+        ratings.add(rating);
+    }
+
+    public List<Movie> getFlaggedMovies() {
+        return flaggedMovies;
+    }
 
     public String getName() {
         return name;
@@ -83,7 +95,7 @@ public class User implements UserDetails {
     public String getPassword() {
         return password;
     }
-    
+
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
