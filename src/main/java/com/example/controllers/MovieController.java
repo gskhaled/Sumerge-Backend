@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.entities.Movie;
 import com.example.services.MovieService;
+import com.example.services.MovieServiceImpl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 public class MovieController {
     @Autowired
-    private MovieService movieService;
+    private MovieService movieService = new MovieServiceImpl();
 
     @RequestMapping("/movies/{id}")
     public Movie getMovie(@PathVariable String id) {

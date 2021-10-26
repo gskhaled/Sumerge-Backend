@@ -3,6 +3,7 @@ package com.example.security.filters;
 import com.example.entities.User;
 import com.example.services.JwtUtil;
 import com.example.services.UserService;
+import com.example.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +24,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private UserService userService;
+    private UserService userService = new UserServiceImpl();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
