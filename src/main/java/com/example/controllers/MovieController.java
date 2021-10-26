@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.dtos.MovieEditForm;
 import com.example.dtos.MovieIdForm;
+import com.example.dtos.MovieResponseDTO;
 import com.example.dtos.RatingForm;
 import com.example.entities.Movie;
 import com.example.services.MovieService;
@@ -21,10 +22,20 @@ public class MovieController {
         return movieService.getMovie(Integer.parseInt(id));
     }
 
-    @RequestMapping("/movies")
-    public List<Movie> getAllMovies(@RequestParam(name = "page", required = false, defaultValue = "1") String page) {
-        return movieService.getAllMovies(Integer.parseInt(page));
+    @CrossOrigin
+    @RequestMapping(value = "/movies")
+    public MovieResponseDTO getAllMovies(@RequestParam(name = "page", required = false, defaultValue = "1") String page) {
+        List<Movie> results = movieService.getAllMovies(Integer.parseInt(page));
+        MovieResponseDTO responseDTO = new MovieResponseDTO();
+        responseDTO.setMovies(results);
+        return responseDTO;
     }
+
+//    @CrossOrigin
+//    @RequestMapping("/movies")
+//    public Response getAllMovies(@RequestParam(name = "page", required = false, defaultValue = "1") String page) {
+//        return Response.ok(movieService.getAllMovies(Integer.parseInt(page));
+//    }
 
     @RequestMapping("/movies/recommend")
     public List<Movie> recommendMovies(@RequestHeader("Authorization") String token) {
