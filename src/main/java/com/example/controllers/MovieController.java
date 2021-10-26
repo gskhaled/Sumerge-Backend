@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,25 +25,29 @@ public class MovieController {
         return movieService.getAllMovies(Integer.parseInt(page));
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/movies/editMovie")
+    public Movie editMovie(@RequestBody MovieEditForm form) {
+        return movieService.editMovie(form.getMovieId(), form.getLanguage(), form.getRelease_date(), form.getGenre_ids());
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/movies")
     public Movie addMovie(@RequestBody Movie movie) {
-        System.out.println("To add: " + movie);
         return movieService.addMovie(movie);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/movies/addRating")
-    private String addRating(@RequestBody RatingForm form) {
-        return movieService.addRating(form.movieId, form.userId, Short.parseShort(form.rating));
+    private String addRating(@RequestBody RatingForm form, @RequestHeader("Authorization") String token) {
+        return movieService.addRating(form.movieId, token.substring(7), Short.parseShort(form.rating));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/movies/addFlag")
-    private String addFlag(@RequestBody FlagForm form) {
-        return movieService.addFlag(form.movieId, form.userId);
+    private String addFlag(@RequestBody MovieIdForm form, @RequestHeader("Authorization") String token) {
+        return movieService.addFlag(form.movieId, token.substring(7));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/movies/removeFlag")
-    private String removeFlag(@RequestBody FlagForm form) {
-        return movieService.removeFlag(form.movieId, form.userId);
+    private String removeFlag(@RequestBody MovieIdForm form, @RequestHeader("Authorization") String token) {
+        return movieService.removeFlag(form.movieId, token.substring(7));
     }
 
     //    @RolesAllowed("admin")
@@ -57,24 +63,12 @@ public class MovieController {
     }
 
     private static class RatingForm {
-        String userId;
         int movieId;
         String rating;
 
-        public RatingForm(String userId, int movieId, String rating) {
-            this.userId = userId;
+        public RatingForm(int movieId, String rating) {
             this.movieId = movieId;
             this.rating = rating;
-        }
-    }
-
-    private static class FlagForm {
-        String userId;
-        int movieId;
-
-        public FlagForm(String userId, int movieId) {
-            this.userId = userId;
-            this.movieId = movieId;
         }
     }
 
@@ -83,6 +77,55 @@ public class MovieController {
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
         public MovieIdForm(int movieId) {
+            this.movieId = movieId;
+        }
+    }
+
+    private static class MovieEditForm {
+        private int movieId;
+        private String language;
+        private List<Integer> genre_ids;
+        private Date release_date;
+
+        public MovieEditForm(int movieId, String language, ArrayList<Integer> genre_ids, Date release_date) {
+            this.movieId = movieId;
+            this.language = language;
+            this.genre_ids = genre_ids;
+            this.release_date = release_date;
+        }
+
+        public MovieEditForm() {
+        }
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(String language) {
+            this.language = language;
+        }
+
+        public List<Integer> getGenre_ids() {
+            return genre_ids;
+        }
+
+        public void setGenre_ids(List<Integer> genre_ids) {
+            this.genre_ids = genre_ids;
+        }
+
+        public Date getRelease_date() {
+            return release_date;
+        }
+
+        public void setRelease_date(Date release_date) {
+            this.release_date = release_date;
+        }
+
+        public int getMovieId() {
+            return movieId;
+        }
+
+        public void setMovieId(int movieId) {
             this.movieId = movieId;
         }
     }

@@ -81,6 +81,9 @@ public class Movie {
     @ColumnDefault("false")
     private boolean hidden;
 
+    @Column(name = "added_by", nullable = false)
+    private String addedBy;
+
     public Movie(Integer id, String title, String original_title, boolean adult, boolean video, String backdrop_path, String poster_path, String original_language, float popularity, float voteAverage, Integer vote_count, String overview, Date release_date) {
         this.id = id;
         this.title = title;
@@ -120,6 +123,7 @@ public class Movie {
                 ", ratings=" + ratings +
                 ", flaggedMovies=" + flaggedMovies +
                 ", hidden=" + hidden +
+                ", addedBy=" + addedBy +
                 '}';
     }
 
@@ -233,6 +237,14 @@ public class Movie {
 
     public List<Rating> getRatings() {
         return ratings;
+    }
+
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String s) {
+        addedBy = s;
     }
 
     public List<User> getFlagged() {

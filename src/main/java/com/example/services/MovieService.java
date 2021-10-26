@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,8 @@ public class MovieService {
     private RatingRepository ratingRepository;
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostConstruct
     public void populateDatabase() {
@@ -49,6 +52,7 @@ public class MovieService {
             for (MovieDTO movieDTO :
                     response.results) {
                 Movie movie = movieDTO.mapToMovie();
+                movie.setAddedBy("api");
                 for (int genreId :
                         movieDTO.getGenre_ids()) {
                     Genre genre = genreRepository.findById(genreId).orElse(null);
@@ -96,19 +100,40 @@ public class MovieService {
     }
 
     public Movie getMovie(int id) {
-//        return movies.stream().filter(t -> t.getId().equals(id)).findFirst().get();
         return movieRepository.findById(id).orElse(null);
     }
 
     public Movie addMovie(Movie movie) {
+        movie.setAddedBy("admin");
         return movieRepository.save(movie);
     }
 
-    public String addRating(int movieId, String userId, short rating) {
+    public Movie editMovie(int movieId, String language, Date release_date, List<Integer> genre_ids) {
+        List<Genre> genre_list = new ArrayList<>();
+        for (int genreId :
+                genre_ids) {
+            Genre genre = genreRepository.findById(genreId).orElse(null);
+            if (genre != null)
+                genre_list.add(genre);
+        }
         Movie movie = movieRepository.findById(movieId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
+        if (movie != null) {
+            if (!language.equals(""))
+                movie.setOriginal_language(language);
+            if (release_date != null)
+                movie.setRelease_date(release_date);
+            movie.getGenres().addAll(genre_list);
+            movieRepository.save(movie);
+        }
+        return movie;
+    }
+
+    public String addRating(int movieId, String token, short rating) {
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+        String username = jwtUtil.extractUsername(token);
+        User user = userRepository.findById(username).orElse(null);
         if (movie != null && user != null && rating > 0 && rating <= 10) {
-            if (!movie.wasRatedBefore(userId)) {
+            if (!movie.wasRatedBefore(username)) {
                 movie.recalculateVote(rating);
                 ratingRepository.save(new Rating(rating, user, movie));
                 movieRepository.save(movie);
@@ -119,14 +144,13 @@ public class MovieService {
         return "Error";
     }
 
-    public String addFlag(int movieId, String userId) {
+    public String addFlag(int movieId, String token) {
         Movie movie = movieRepository.findById(movieId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
+        String username = jwtUtil.extractUsername(token);
+        User user = userRepository.findById(username).orElse(null);
         if (movie != null && user != null) {
-            if (!movie.wasFlaggedBefore(userId)) {
-                System.out.println("BEFORE: " + movie.getFlagged());
+            if (!movie.wasFlaggedBefore(username)) {
                 movie.getFlagged().add(user);
-                System.out.println("AFTER: " + movie.getFlagged());
                 movieRepository.save(movie);
                 return "OK";
             }
@@ -135,14 +159,13 @@ public class MovieService {
         return "Error";
     }
 
-    public String removeFlag(int movieId, String userId) {
+    public String removeFlag(int movieId, String token) {
         Movie movie = movieRepository.findById(movieId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
+        String username = jwtUtil.extractUsername(token);
+        User user = userRepository.findById(username).orElse(null);
         if (movie != null && user != null) {
-            if (movie.wasFlaggedBefore(userId)) {
-                System.out.println("BEFORE: " + movie.getFlagged());
+            if (movie.wasFlaggedBefore(username)) {
                 movie.getFlagged().remove(user);
-                System.out.println("AFTER: " + movie.getFlagged());
                 movieRepository.save(movie);
                 return "OK";
             }

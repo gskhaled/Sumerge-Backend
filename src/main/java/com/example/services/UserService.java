@@ -26,7 +26,8 @@ public class UserService implements UserDetailsService {
     public User signUp(User user) {
         if (userRepository.findById(user.getUsername()).orElse(null) == null)
             return userRepository.save(user);
-        return null;
+        else
+            throw new BadCredentialsException("User invalid");
     }
 
     public ResponseEntity<?> signIn(AuthorizationRequest form) throws Exception {
