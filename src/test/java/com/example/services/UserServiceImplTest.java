@@ -41,7 +41,7 @@ class UserServiceImplTest {
         User user = new User();
         when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
-        assertEquals(userService.signUp(user), user);
+        assertEquals(user, userService.signUp(user));
     }
 
     @Test
@@ -54,13 +54,13 @@ class UserServiceImplTest {
         when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
         AuthorizationRequest form = new AuthorizationRequest("test", "test");
         AuthorizationResponse response = new AuthorizationResponse("token");
-        areEqual(userService.signIn(form).getBody(), response);
+        areEqual(response, userService.signIn(form).getBody());
     }
 
     @Test
     void loadUserByUsername() {
         User user = new User();
         when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
-        areEqual(userService.loadUserByUsername(""), user);
+        areEqual(user, userService.loadUserByUsername(""));
     }
 }

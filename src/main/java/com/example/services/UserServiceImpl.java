@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public String oldSignIn(String username, String password) {
+    /*public String oldSignIn(String username, String password) {
         User user = userRepository.findById(username).orElse(null);
         if (user != null) {
             if (user.getPassword().equals(password))
@@ -59,5 +59,5 @@ public class UserServiceImpl implements UserService {
                 return "Wrong Password";
         }
         return "Error";
-    }
+    }*/
 }

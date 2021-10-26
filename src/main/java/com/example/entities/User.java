@@ -42,12 +42,16 @@ public class User implements UserDetails {
         return ratings;
     }
 
-    public void addRating(Rating rating) {
-        ratings.add(rating);
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     public List<Movie> getFlaggedMovies() {
         return flaggedMovies;
+    }
+
+    public void setFlaggedMovies(List<Movie> flaggedMovies) {
+        this.flaggedMovies = flaggedMovies;
     }
 
     public String getName() {
